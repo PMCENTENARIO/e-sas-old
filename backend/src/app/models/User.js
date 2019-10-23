@@ -24,6 +24,11 @@ class User extends Model {
     return this;
   }
 
+  // Associação de modulos passando config -> belongsTo associando os campos
+  static associate(models) {
+    this.belongsTo(models.File, { foreignKey: 'avatar_id' });
+  }
+
   checkPassword(password) {
     return bcrypt.compare(password, this.password_hash);
   }
