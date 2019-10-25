@@ -1,13 +1,23 @@
 import * as Yup from 'yup';
 import User from '../models/User';
+import Person from '../models/Person';
 
 class UserController {
+  async index(req, res) {
+    // Verifica perfil usuário
+    if (req.userProfile < 2)
+      return res.status(400).json({ error: 'User does not have permission' });
+
+    const users = await User.findAll({ include: { association: 'person' } });
+    return res.json(users);
+  }
+
   async store(req, res) {
+    if (req.userProfile < 2)
+      return res.status(400).json({ error: 'User does not have permission' });
+
     // Validação de dados de entrada (lib YUP)
     const schema = Yup.object().shape({
-      name: Yup.string()
-        .required()
-        .min(3),
       email: Yup.string()
         .email()
         .required(),
@@ -20,26 +30,40 @@ class UserController {
       return res.status(401).json({ error: 'Validation fail' });
     }
 
-    const data = req.body;
+    const { person_id } = req.params;
+    const { email, password, profile } = req.body;
 
-    const userExists = await User.findOne({ where: { email: data.email } });
+    const person = await Person.findByPk(person_id);
+
+    // Caso não exista na tabela pessoas add
+    if (!person) return res.status(400).json({ error: 'Person not found' });
+
+    const userExists = await User.findOne({ where: { email } });
 
     if (userExists) res.status(400).json({ error: 'User already exists.' });
 
-    const { id, name, email, profile } = await User.create(data);
+    const { id } = await User.create({
+      person_id,
+      email,
+      password,
+      profile,
+    });
 
     return res.json({
       id,
-      name,
+      person_id,
       email,
       profile,
     });
   }
 
   async update(req, res) {
+    // Verifica perfil usuário
+    if (req.userProfile < 2)
+      return res.status(400).json({ error: 'User does not have permission' });
+
     // Validação de dados de entrada
     const schema = Yup.object().shape({
-      name: Yup.string(),
       email: Yup.string().email(),
       oldPassword: Yup.string().min(6),
       password: Yup.string()
@@ -56,11 +80,13 @@ class UserController {
       return res.status(401).json({ error: 'Validation fail' });
     }
 
+    const { user_id } = req.query;
+
     const { email, oldPassword } = req.body;
 
-    const user = await User.findByPk(req.userId);
+    const user = await User.findByPk(user_id);
 
-    // Verifica email se for auterado no frontend
+    // Verifica email
     if (email !== user.email) {
       const userExists = await User.findOne({ where: { email } });
 

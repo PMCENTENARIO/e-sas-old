@@ -10,10 +10,9 @@ module.exports = {
       person_id: {
         type: Sequelize.INTEGER,
         references: { model: 'people', key: 'id' },
-        unique: true,
+        allowNull: true,
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
-        allowNull: true,
       },
       email: {
         type: Sequelize.STRING,

@@ -13,11 +13,11 @@ module.exports = {
       },
       phone: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
       document: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: true,
       },
       created_at: {

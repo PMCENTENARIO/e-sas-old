@@ -2,6 +2,9 @@ import File from '../models/File';
 
 class FileController {
   async store(req, res) {
+    if (req.userProfile < 2)
+      return res.status(400).json({ error: 'User does not have permission' });
+
     const { originalname: name, filename: path } = req.file;
     const file = await File.create({
       name,

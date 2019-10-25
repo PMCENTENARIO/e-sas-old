@@ -9,16 +9,15 @@ class Person extends Model {
         document: Sequelize.STRING,
       },
       {
-        freezeTableName: false,
         sequelize,
       }
     );
     return this;
   }
 
-  // Associação de modulos passando config -> belongsTo associando os campos
+  // Associação de modulos passando config -> hasOne associando os campos
   static associate(models) {
-    this.belongsTo(models.Person, { foreignKey: 'id' });
+    this.hasOne(models.User, { foreignKey: 'person_id', as: 'person' });
   }
 }
 export default Person;

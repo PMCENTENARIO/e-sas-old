@@ -14,7 +14,9 @@ export default async (req, res, next) => {
   // Realiza a decodificação do token utilizando promisify
   await promisify(jwt.verify)(token, authConfig.SECRET)
     .then(decoded => {
-      req.userId = decoded.id; // Add id usuário a request
+      req.userId = decoded.id; // Add id usuário ao request
+      req.userProfile = decoded.profile; // Add profile ao request
+
       return next();
     })
     .catch(error => {
