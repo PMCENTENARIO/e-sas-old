@@ -7,3 +7,5 @@ src/config/database.js
 
 #Iginore Pasta temporária
 tmp
+
+.env

@@ -16,6 +16,7 @@ class UserController {
     if (req.userProfile < 2)
       return res.status(400).json({ error: 'User does not have permission' });
 
+    const { email, password, profile } = req.body;
     // Validação de dados de entrada (lib YUP)
     const schema = Yup.object().shape({
       email: Yup.string()
@@ -31,7 +32,6 @@ class UserController {
     }
 
     const { person_id } = req.params;
-    const { email, password, profile } = req.body;
 
     const person = await Person.findByPk(person_id);
 
@@ -42,19 +42,29 @@ class UserController {
 
     if (userExists) res.status(400).json({ error: 'User already exists.' });
 
-    const { id } = await User.create({
-      person_id,
-      email,
-      password,
-      profile,
-    });
+    try {
+      const { id } = await User.create({
+        person_id,
+        email,
+        password,
+        profile,
+      });
 
-    return res.json({
-      id,
-      person_id,
-      email,
-      profile,
-    });
+      return res.json({
+        id,
+        person_id,
+        email,
+        profile,
+      });
+    } catch (err) {
+      const { message, type, path, value } = err.errors[0];
+
+      res.json({ message, type, path, value });
+    }
+
+    return res
+      .status(400)
+      .json({ error: 'Erro ocurred. Contact the system manager' });
   }
 
   async update(req, res) {

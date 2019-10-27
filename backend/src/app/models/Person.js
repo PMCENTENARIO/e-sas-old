@@ -18,6 +18,16 @@ class Person extends Model {
   // Associação de modulos passando config -> hasOne associando os campos
   static associate(models) {
     this.hasOne(models.User, { foreignKey: 'person_id', as: 'person' });
+    this.belongsToMany(models.Task, {
+      foreignKey: 'person_id',
+      through: 'schedules',
+      as: 'tasks',
+    });
+    this.belongsToMany(models.Address, {
+      foreignKey: 'person_id',
+      through: 'schedules',
+      as: 'addresses',
+    });
   }
 }
 export default Person;

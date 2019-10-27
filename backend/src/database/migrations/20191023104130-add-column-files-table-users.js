@@ -1,4 +1,3 @@
-// Creating column in users table
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.addColumn('users', 'avatar_id', {
