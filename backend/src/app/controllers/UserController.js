@@ -1,6 +1,8 @@
 import * as Yup from 'yup';
+import moment from 'moment-timezone';
 import User from '../models/User';
 import Person from '../models/Person';
+import Log from '../schema/Log';
 
 class UserController {
   async index(req, res) {
@@ -48,6 +50,17 @@ class UserController {
         email,
         password,
         profile,
+      });
+
+      /*
+      System log
+      */
+      await Log.create({
+        content: `Um novo usuário para ${person.name} foi criado na ${moment()
+          .locale('pt-br')
+          .tz(process.env.TIMEZONE)
+          .format('LLLL')}`,
+        user: req.userId,
       });
 
       return res.json({

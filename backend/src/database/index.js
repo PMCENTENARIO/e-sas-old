@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import mongoose from 'mongoose';
 import dbConfig from '../config/database';
 
 import User from '../app/models/User';
@@ -13,6 +14,7 @@ const models = [User, File, Person, Task, Address, Schedule];
 class Database {
   constructor() {
     this.init();
+    this.mongo();
   }
 
   init() {
@@ -22,6 +24,14 @@ class Database {
       .map(model => model.init(this.connection))
       .map(model => model.associate && model.associate(this.connection.models));
     // percorre as function static associando dos models
+  }
+
+  mongo() {
+    this.mongoConnection = mongoose.connect('mongodb://localhost:27017/e-sas', {
+      useNewUrlParser: true,
+      useFindAndModify: true,
+      useUnifiedTopology: true,
+    });
   }
 }
 

@@ -47,14 +47,9 @@ class PersonController {
     const person = await Person.findByPk(id);
 
     try {
-      const { name, phone, document } = await person.update(req.body);
+      const personUpdate = await person.update(req.body);
 
-      return res.json({
-        id,
-        name,
-        phone,
-        document,
-      });
+      return res.json(personUpdate);
     } catch (err) {
       const { message, type, path, value } = err.errors[0];
 

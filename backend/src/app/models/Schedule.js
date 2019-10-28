@@ -4,9 +4,12 @@ class Schedule extends Model {
   static init(sequelize) {
     super.init(
       {
-        message: Sequelize.STRING,
+        date: Sequelize.DATE,
         protocol: Sequelize.STRING,
+        message: Sequelize.STRING,
+        bucket: Sequelize.STRING,
         apply: Sequelize.BOOLEAN,
+        canceled_at: Sequelize.DATE,
       },
       {
         sequelize,
@@ -20,6 +23,10 @@ class Schedule extends Model {
       foreignKey: 'person_id',
       as: 'person',
     });
+    this.belongsTo(models.User, {
+      foreignKey: 'user_id',
+      as: 'user',
+    });
     this.belongsTo(models.Address, {
       foreignKey: 'address_id',
       as: 'address',
@@ -27,10 +34,6 @@ class Schedule extends Model {
     this.belongsTo(models.Task, {
       foreignKey: 'task_id',
       as: 'task',
-    });
-    this.belongsTo(models.User, {
-      foreignKey: 'user_id',
-      as: 'user',
     });
   }
 }
