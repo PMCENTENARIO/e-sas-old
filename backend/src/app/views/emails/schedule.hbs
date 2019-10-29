@@ -1,0 +1,17 @@
+<strong>Olá, {{ provider }}</strong>
+<p>Houve um novo agendamento de serviço com protocolo: <b>{{ protocol }}</b>, confira os detalhes abaixo:</p>
+<p>
+  <strong>Solicitante: </strong> {{ person }} <br />
+  <strong>Data: </strong> {{ date }} <br />
+  <strong>Tipo do serviço: </strong> {{ task }} <br />
+  <strong>Endereço: </strong> {{ address }} <br />
+  <br />
+  <strong>Observações: </strong><br />
+  <p>
+    {{#if message}}
+    {{message}}
+    {{else}}
+    Nenhuma mensagem registrada
+    {{/if}}
+  </p>
+</p>

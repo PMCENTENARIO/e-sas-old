@@ -4,6 +4,8 @@ import Address from '../models/Address';
 import Schedule from '../models/Schedule';
 import Log from '../schema/Log';
 import Person from '../models/Person';
+import Task from '../models/Task';
+import Mail from '../../lib/Mail';
 
 require('dotenv').config();
 
@@ -50,6 +52,7 @@ class ScheduleController {
       return res.status(401).json({ error: 'User does not have permission' });
 
     const { person_id } = req.headers;
+
     const {
       zip_code,
       street,
@@ -78,42 +81,78 @@ class ScheduleController {
       where: { zip_code, street, number, district },
     });
 
-    try {
-      const protocol = `${process.env.ABBREV_NAME}${moment()
-        .locale('pt-br')
-        .tz(process.env.TIMEZONE)
-        .format('YYMMDDHHmmss')}`;
+    const protocol = `${process.env.ABBREV_NAME}${moment()
+      .locale('pt-br')
+      .tz(process.env.TIMEZONE)
+      .format('YYMMDDHHmmss')}`;
 
-      const schedule = await Schedule.create({
-        protocol,
-        person_id,
-        task_id,
-        user_id: req.userId,
-        address_id: address.id,
-        date,
-        message,
+    await Schedule.create({
+      protocol,
+      person_id,
+      task_id,
+      user_id: req.userId,
+      address_id: address.id,
+      date,
+      message,
+    })
+      .then(async success => {
+        const schedule = await Schedule.findByPk(success.id, {
+          attributes: ['id', 'protocol', 'date', 'message'],
+          include: [
+            {
+              model: Person,
+              as: 'person',
+              attributes: ['name', 'phone'],
+            },
+            {
+              model: Task,
+              as: 'task',
+              attributes: ['title'],
+            },
+          ],
+        });
+
+        //   // /* Envio de email de notificação para aviso de criação de serviço */
+        await Mail.sendMail({
+          to: `Luiz Henrique <luizhenrique@centenariodosul.com>`,
+          subject: `${process.env.APP_NAME} notificação: Agendamento de novo serviço`,
+          template: 'schedule',
+          context: {
+            provider: 'Colaborador',
+            protocol: schedule.protocol,
+            date: moment(date)
+              .locale('pt-br')
+              .tz(process.env.TIMEZONE)
+              .format('DD/MM/YYYY'),
+            person: schedule.person.name,
+            task: schedule.task.title,
+            address: `${street}, ${number} - ${district} CEP: ${zip_code}`,
+            message,
+          },
+        });
+
+        //   /*
+        // Register log event MongoDB
+        // */
+
+        await Log.create({
+          content: `Foi criado um novo agendamento para ${
+            schedule.person.name
+          } na ${moment()
+            .locale('pt-br')
+            .tz(process.env.TIMEZONE)
+            .format('LLLL')}`,
+          user: req.userId,
+          task: task_id,
+        });
+
+        return res.json(schedule);
+      })
+      .catch(error => {
+        return res.json(error);
       });
 
-      /*
-      Register log event MongoDB
-      */
-      const person = await Person.findByPk(person_id);
-
-      await Log.create({
-        content: `Foi criado um novo agendamento para ${
-          person.name
-        } na ${moment()
-          .locale('pt-br')
-          .tz(process.env.TIMEZONE)
-          .format('LLLL')}`,
-        user: req.userId,
-        task: task_id,
-      });
-
-      return res.json(schedule);
-    } catch (error) {
-      return res.json(error);
-    }
+    return res.json('OK');
   }
 
   async update(req, res) {
@@ -125,20 +164,12 @@ class ScheduleController {
 
     const schedule = await Schedule.findByPk(id);
 
-    // ERRO AQUI NO UPDATE
-    const { user_id } = await schedule.update(
-      {
-        bucket,
-        apply: apply ? new Date() : apply,
-        message,
-        user_id: req.userId,
-      },
-      {
-        where: {
-          id,
-        },
-      }
-    );
+    const { user_id } = await schedule.update({
+      bucket,
+      apply: apply ? new Date() : null,
+      message,
+      user_id: req.userId,
+    });
 
     await Log.create({
       content: `Foi finalizado um agendamento em com protocolo: ${
@@ -161,6 +192,7 @@ class ScheduleController {
     const { id } = req.params;
 
     const schedule = await Schedule.findByPk(id);
+
     const { name } = await Person.findByPk(schedule.person_id);
 
     schedule.canceled_at = new Date();
