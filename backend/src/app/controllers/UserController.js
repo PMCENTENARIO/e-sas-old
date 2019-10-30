@@ -37,12 +37,18 @@ class UserController {
 
     const person = await Person.findByPk(person_id);
 
-    // Caso não exista na tabela pessoas add
+    /* VERIFY IF ALREADY USER, EMAIL */
     if (!person) return res.status(400).json({ error: 'Person not found' });
 
     const userExists = await User.findOne({ where: { email } });
 
-    if (userExists) res.status(400).json({ error: 'User already exists.' });
+    if (userExists) res.status(400).json({ error: 'Email already exists.' });
+
+    const personExists = await User.findOne({ where: { person_id } });
+
+    if (personExists)
+      res.status(400).json({ error: 'Person already exists outher user.' });
+    /* END VERIFY */
 
     try {
       const { id } = await User.create({
@@ -53,7 +59,7 @@ class UserController {
       });
 
       /*
-      System log
+      SENT SYSTEM LOG
       */
       await Log.create({
         content: `Um novo usuário para ${person.name} foi criado na ${moment()
@@ -62,6 +68,9 @@ class UserController {
           .format('LLLL')}`,
         user: req.userId,
       });
+      /*
+      END LOG
+      */
 
       return res.json({
         id,

@@ -7,12 +7,12 @@ const LogSchema = new mongoose.Schema(
       required: true,
     },
     user: {
-      type: Number,
+      type: String,
       required: true,
     },
     task: {
-      type: Number,
-      required: true,
+      type: String,
+      required: false,
     },
   },
   {

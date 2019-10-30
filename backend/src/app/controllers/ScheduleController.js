@@ -2,10 +2,13 @@ import * as Yup from 'yup';
 import moment from 'moment-timezone';
 import Address from '../models/Address';
 import Schedule from '../models/Schedule';
-import Log from '../schema/Log';
 import Person from '../models/Person';
 import Task from '../models/Task';
-import Mail from '../../lib/Mail';
+import User from '../models/User';
+
+import ScheduleMail from '../jobs/ScheduleMail';
+import Queue from '../../lib/Queue';
+import LogSystem from '../../lib/LogSystem';
 
 require('dotenv').config();
 
@@ -61,6 +64,7 @@ class ScheduleController {
       task_id,
       date,
       message,
+      collaborator,
     } = req.body;
 
     const schema = Yup.object().shape({
@@ -86,73 +90,85 @@ class ScheduleController {
       .tz(process.env.TIMEZONE)
       .format('YYMMDDHHmmss')}`;
 
-    await Schedule.create({
-      protocol,
-      person_id,
-      task_id,
-      user_id: req.userId,
-      address_id: address.id,
-      date,
-      message,
-    })
-      .then(async success => {
-        const schedule = await Schedule.findByPk(success.id, {
-          attributes: ['id', 'protocol', 'date', 'message'],
+    try {
+      const { id } = await Schedule.create({
+        protocol,
+        person_id,
+        task_id,
+        user_id: req.userId,
+        address_id: address.id,
+        date,
+        message,
+      });
+
+      const schedule = await Schedule.findByPk(id, {
+        attributes: [
+          'id',
+          'protocol',
+          'date',
+          'message',
+          'user_id',
+          'createdAt',
+        ],
+        include: [
+          {
+            model: Person,
+            as: 'person',
+            attributes: ['name', 'phone'],
+          },
+          {
+            model: Task,
+            as: 'task',
+            attributes: ['id', 'title'],
+          },
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id'],
+            include: [
+              {
+                model: Person,
+                as: 'person',
+                attributes: ['name'],
+              },
+            ],
+          },
+        ],
+      });
+
+      /* Envio de email de notificação para aviso de criação de serviço */
+      if (collaborator) {
+        const collaboratorPerson = await User.findByPk(collaborator, {
+          attributes: ['id', 'email'],
           include: [
-            {
-              model: Person,
-              as: 'person',
-              attributes: ['name', 'phone'],
-            },
-            {
-              model: Task,
-              as: 'task',
-              attributes: ['title'],
-            },
+            { model: Person, as: 'person', attributes: ['name', 'phone'] },
           ],
         });
 
-        //   // /* Envio de email de notificação para aviso de criação de serviço */
-        await Mail.sendMail({
-          to: `Luiz Henrique <luizhenrique@centenariodosul.com>`,
-          subject: `${process.env.APP_NAME} notificação: Agendamento de novo serviço`,
-          template: 'schedule',
-          context: {
-            provider: 'Colaborador',
-            protocol: schedule.protocol,
-            date: moment(date)
-              .locale('pt-br')
-              .tz(process.env.TIMEZONE)
-              .format('DD/MM/YYYY'),
-            person: schedule.person.name,
-            task: schedule.task.title,
-            address: `${street}, ${number} - ${district} CEP: ${zip_code}`,
-            message,
-          },
+        /* Sent queues */
+        await Queue.add(ScheduleMail.key, {
+          schedule,
+          date,
+          street,
+          number,
+          district,
+          zip_code,
+          message,
+          collaboratorPerson,
         });
+      }
 
-        //   /*
-        // Register log event MongoDB
-        // */
+      /* Register log event MongoDB */
+      const text = 'Houve um novo agendamento de serviços para';
+      await LogSystem.processLog(schedule, text);
+      /* Fim registro */
 
-        await Log.create({
-          content: `Foi criado um novo agendamento para ${
-            schedule.person.name
-          } na ${moment()
-            .locale('pt-br')
-            .tz(process.env.TIMEZONE)
-            .format('LLLL')}`,
-          user: req.userId,
-          task: task_id,
-        });
-
-        return res.json(schedule);
-      })
-      .catch(error => {
-        return res.json(error);
+      return res.json({
+        schedule,
       });
-
-    return res.json('OK');
+    } catch (error) {
+      return res.json(error);
+    }
   }
 
   async update(req, res) {
@@ -162,7 +178,33 @@ class ScheduleController {
     const { id } = req.params;
     const { bucket, message, apply } = req.body;
 
-    const schedule = await Schedule.findByPk(id);
+    const schedule = await Schedule.findByPk(id, {
+      attributes: ['id', 'date', 'protocol', 'canceled_at'],
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'email'],
+          include: [
+            {
+              model: Person,
+              as: 'person',
+              attributes: ['id', 'name'],
+            },
+          ],
+        },
+        {
+          model: Person,
+          as: 'person',
+          attributes: ['id', 'name', 'phone'],
+        },
+        {
+          model: Task,
+          as: 'task',
+          attributes: ['id', 'title'],
+        },
+      ],
+    });
 
     const { user_id } = await schedule.update({
       bucket,
@@ -171,16 +213,10 @@ class ScheduleController {
       user_id: req.userId,
     });
 
-    await Log.create({
-      content: `Foi finalizado um agendamento em com protocolo: ${
-        schedule.protocol
-      } na ${moment()
-        .locale('pt-br')
-        .tz(process.env.TIMEZONE)
-        .format('LLLL')}`,
-      user: req.userId,
-      task: schedule.task_id,
-    });
+    /* Register log event MongoDB */
+    const text = `Foi finalizado um agendamento em com protocolo: ${schedule.protocol}`;
+    await LogSystem.processLog(schedule, text);
+    /* Fim registro */
 
     return res.json({ id, apply, message, user_id });
   }
@@ -191,25 +227,50 @@ class ScheduleController {
 
     const { id } = req.params;
 
-    const schedule = await Schedule.findByPk(id);
-
-    const { name } = await Person.findByPk(schedule.person_id);
+    const schedule = await Schedule.findByPk(id, {
+      attributes: ['id', 'date', 'protocol', 'canceled_at'],
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'email'],
+          include: [
+            {
+              model: Person,
+              as: 'person',
+              attributes: ['id', 'name'],
+            },
+          ],
+        },
+        {
+          model: Person,
+          as: 'person',
+          attributes: ['id', 'name', 'phone'],
+        },
+        {
+          model: Task,
+          as: 'task',
+          attributes: ['id', 'title'],
+        },
+      ],
+    });
 
     schedule.canceled_at = new Date();
     schedule.save();
 
-    await Log.create({
-      content: `Foi cancelado um agendamento relizado em ${moment(schedule.date)
-        .locale('pt-br')
-        .format('LL')} para ${name} na ${moment()
-        .locale('pt-br')
-        .tz(process.env.TIMEZONE)
-        .format('LLLL')}`,
-      user: req.userId,
-      task: schedule.task_id,
-    });
+    /* Register log event MongoDB */
+    const text = `Foi cancelado um agendamento relizado em ${moment(
+      schedule.date
+    )
+      .locale('pt-br')
+      .format('LL')} para ${schedule.person.name} na ${moment()
+      .locale('pt-br')
+      .tz(process.env.TIMEZONE)
+      .format('LLLL')}`;
+    await LogSystem.processLog(schedule, text);
+    /* Fim registro */
 
-    return res.json();
+    return res.json(schedule);
   }
 }
 

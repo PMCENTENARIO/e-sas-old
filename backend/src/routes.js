@@ -12,6 +12,7 @@ import TaskController from './app/controllers/TaskController';
 import AddressController from './app/controllers/AddressController';
 import ScheduleController from './app/controllers/ScheduleController';
 import LogController from './app/controllers/LogController';
+import CollaboratorController from './app/controllers/CollaboratorController';
 
 const upload = multer(multerConfig);
 const routes = new Router();
@@ -26,6 +27,11 @@ routes.get('/people', PersonController.index);
 routes.post('/people/:person_id/users', UserController.store);
 routes.put('/people/:id', PersonController.update);
 routes.get('/people/:id', PersonController.show);
+
+routes.get('/collaborators', CollaboratorController.index);
+routes.get('/collaborators/:id', CollaboratorController.show);
+routes.put('/collaborators/:id', CollaboratorController.update);
+routes.delete('/collaborators/:id', CollaboratorController.delete);
 
 routes.put('/users', UserController.update);
 routes.get('/users', UserController.index);
