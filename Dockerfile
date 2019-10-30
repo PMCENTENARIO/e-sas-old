@@ -1,7 +1,4 @@
-# define a imagem base
-FROM ubuntu
-# define o mantenedor da imagem
-LABEL maintainer="PR Spiguel Tecnologia"
+
 # Atualiza a imagem com os pacotes
 RUN apt-get update
 # Instala o NGINX para testar
