@@ -6,7 +6,13 @@ class PersonController {
     if (req.userProfile < 2)
       return res.status(400).json({ error: 'User does not have permission' });
 
-    const people = await Person.findAll();
+    const { page = 1 } = req.query;
+
+    const people = await Person.findAll({
+      order: ['name'],
+      limit: 20,
+      offset: (page - 1) * 20,
+    });
 
     return res.json(people);
   }

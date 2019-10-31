@@ -41,9 +41,8 @@ routes.post('/schedules', ScheduleController.store);
 routes.put('/schedules/:id', ScheduleController.update);
 routes.delete('/schedules/:id', ScheduleController.delete);
 
-routes.get('/addresses');
-routes.post('/addresses', AddressController.store);
-routes.put('/addresses');
+routes.get('/addresses', AddressController.index);
+routes.put('/addresses/:id', AddressController.update);
 routes.delete('/addresses');
 
 routes.get('/tasks', TaskController.index);

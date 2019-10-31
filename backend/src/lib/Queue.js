@@ -1,9 +1,10 @@
 import Bee from 'bee-queue';
 import ScheduleMail from '../app/jobs/ScheduleMail';
-import LogSystem from '../app/jobs/LogSystem';
+import CanceledScheduleMail from '../app/jobs/CanceledScheduleMail';
+// import LogSystem from '../app/jobs/LogSystem';
 import redisConfig from '../config/redis';
 
-const jobs = [ScheduleMail, LogSystem];
+const jobs = [ScheduleMail, CanceledScheduleMail];
 
 class Queue {
   constructor() {
@@ -30,8 +31,12 @@ class Queue {
   processQueue() {
     jobs.forEach(job => {
       const { bee, handle } = this.queues[job.key];
-      bee.process(handle);
+      bee.on('failed', this.handleFailure).process(handle);
     });
+  }
+
+  handleFailure(job, err) {
+    console.log(`Queue ${job.queue.name}: FAILED`, err);
   }
 }
 

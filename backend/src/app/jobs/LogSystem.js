@@ -1,8 +1,6 @@
 import moment from 'moment-timezone';
 import Log from '../schema/Log';
 
-require('dotenv').config();
-
 class LogSystem {
   get key() {
     return 'LogSystem';

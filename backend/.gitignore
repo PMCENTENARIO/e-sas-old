@@ -1,12 +1,11 @@
 #Ignora pasta modules
 node_modules
-
-#ignora arquivos de autenticação
-src/config/auth.js
-src/config/database.js
-src/config/mail.js
+.env
 
 #Iginore Pasta temporária
 tmp
 
-.env
+
+
+
+

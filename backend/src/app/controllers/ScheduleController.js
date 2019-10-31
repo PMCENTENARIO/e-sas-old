@@ -7,10 +7,9 @@ import Task from '../models/Task';
 import User from '../models/User';
 
 import ScheduleMail from '../jobs/ScheduleMail';
+import CanceledScheduleMail from '../jobs/CanceledScheduleMail';
 import Queue from '../../lib/Queue';
 import LogSystem from '../../lib/LogSystem';
-
-require('dotenv').config();
 
 class ScheduleController {
   async index(req, res) {
@@ -19,7 +18,7 @@ class ScheduleController {
 
     const { page = 1 } = req.query;
 
-    const schedule = await Schedule.findAll({
+    const schedule = await Schedule.finddAll({
       where: { apply: null, canceled_at: null },
       attributes: ['id', 'protocol', 'date', 'message'],
       order: ['date'],
@@ -148,19 +147,13 @@ class ScheduleController {
         /* Sent queues */
         await Queue.add(ScheduleMail.key, {
           schedule,
-          date,
-          street,
-          number,
-          district,
-          zip_code,
-          message,
           collaboratorPerson,
         });
       }
 
       /* Register log event MongoDB */
       const text = 'Houve um novo agendamento de serviços para';
-      await LogSystem.processLog(schedule, text);
+      await LogSystem.scheduleLog(schedule, text);
       /* Fim registro */
 
       return res.json({
@@ -215,7 +208,7 @@ class ScheduleController {
 
     /* Register log event MongoDB */
     const text = `Foi finalizado um agendamento em com protocolo: ${schedule.protocol}`;
-    await LogSystem.processLog(schedule, text);
+    await LogSystem.scheduleLog(schedule, text);
     /* Fim registro */
 
     return res.json({ id, apply, message, user_id });
@@ -226,6 +219,7 @@ class ScheduleController {
       return res.status(401).json({ error: 'User does not have permission' });
 
     const { id } = req.params;
+    const { collaborator } = req.body;
 
     const schedule = await Schedule.findByPk(id, {
       attributes: ['id', 'date', 'protocol', 'canceled_at'],
@@ -252,11 +246,32 @@ class ScheduleController {
           as: 'task',
           attributes: ['id', 'title'],
         },
+        {
+          model: Address,
+          as: 'address',
+          attributes: ['id', 'street', 'number', 'district', 'zip_code'],
+        },
       ],
     });
 
     schedule.canceled_at = new Date();
     schedule.save();
+
+    /* Envio de email de notificação para aviso de criação de serviço */
+    if (collaborator) {
+      const collaboratorPerson = await User.findByPk(collaborator, {
+        attributes: ['id', 'email'],
+        include: [
+          { model: Person, as: 'person', attributes: ['name', 'phone'] },
+        ],
+      });
+
+      /* Sent queues */
+      await Queue.add(CanceledScheduleMail.key, {
+        schedule,
+        collaboratorPerson,
+      });
+    }
 
     /* Register log event MongoDB */
     const text = `Foi cancelado um agendamento relizado em ${moment(
@@ -267,7 +282,7 @@ class ScheduleController {
       .locale('pt-br')
       .tz(process.env.TIMEZONE)
       .format('LLLL')}`;
-    await LogSystem.processLog(schedule, text);
+    await LogSystem.scheduleLog(schedule, text);
     /* Fim registro */
 
     return res.json(schedule);

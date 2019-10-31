@@ -1,5 +1,8 @@
 import * as Yup from 'yup';
 import Task from '../models/Task';
+import User from '../models/User';
+import Person from '../models/Person';
+import LogSystem from '../../lib/LogSystem';
 
 class TasksController {
   async index(req, res) {
@@ -33,6 +36,21 @@ class TasksController {
       defaults: { description },
     });
 
+    /* Register log event MongoDB */
+    const text = 'Houve uma criação de nova tarefa';
+    const user = await User.findByPk(req.userId, {
+      attributes: ['id'],
+      include: [
+        {
+          model: Person,
+          as: 'person',
+          attributes: ['id', 'name'],
+        },
+      ],
+    });
+    await LogSystem.processLog(title, text, user.person.name);
+    /* Fim registro */
+
     return res.json(task);
   }
 
@@ -55,6 +73,21 @@ class TasksController {
     const task = await Task.findByPk(id);
 
     const { title, description } = await task.update(req.body);
+
+    /* Register log event MongoDB */
+    const text = 'Houve uma alteração de uma tarefa';
+    const user = await User.findByPk(req.userId, {
+      attributes: ['id'],
+      include: [
+        {
+          model: Person,
+          as: 'person',
+          attributes: ['id', 'name'],
+        },
+      ],
+    });
+    await LogSystem.processLog(title, text, user.person.name);
+    /* Fim registro */
 
     return res.json({ id, title, description });
   }

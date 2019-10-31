@@ -10,7 +10,14 @@ class UserController {
     if (req.userProfile < 2)
       return res.status(400).json({ error: 'User does not have permission' });
 
-    const users = await User.findAll({ include: { association: 'person' } });
+    const { page } = req.query;
+
+    const users = await User.findAll({
+      order: ['email'],
+      limit: 20,
+      offset: (page - 1) * 20,
+      include: { association: 'person' },
+    });
     return res.json(users);
   }
 

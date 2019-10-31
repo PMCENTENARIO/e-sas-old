@@ -10,6 +10,12 @@ class Schedule extends Model {
         bucket: Sequelize.STRING,
         apply: Sequelize.BOOLEAN,
         canceled_at: Sequelize.DATE,
+        /* collaborator: {
+          type: Sequelize.VIRTUAL,
+          get() {
+            return 'Collaborator';
+          },
+        }, */
       },
       {
         sequelize,
