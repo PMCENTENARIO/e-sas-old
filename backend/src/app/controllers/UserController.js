@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import moment from 'moment-timezone';
 import User from '../models/User';
+import File from '../models/File';
 import Person from '../models/Person';
 import Log from '../schema/Log';
 
@@ -119,11 +120,11 @@ class UserController {
       return res.status(401).json({ error: 'Validation fail' });
     }
 
-    const { user_id } = req.query;
+    const { id } = req.params;
 
     const { email, oldPassword } = req.body;
 
-    const user = await User.findByPk(user_id);
+    const user = await User.findByPk(id);
 
     // Verifica email
     if (email !== user.email) {
@@ -136,13 +137,23 @@ class UserController {
     if (oldPassword && !(await user.checkPassword(oldPassword)))
       res.status(401).json({ error: 'Password does not match' });
 
-    const { id, name, profile } = await user.update(req.body);
+    await user.update(req.body);
+    const { name, profile, avatar } = await User.findByPk(id, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
     return res.json({
       id,
       name,
       email,
       profile,
+      avatar,
     });
   }
 }

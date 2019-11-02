@@ -7,7 +7,7 @@ import PersonController from './app/controllers/PersonController';
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import FileController from './app/controllers/FileController';
-import ProfileController from './app/controllers/ProfileController';
+import ProviderController from './app/controllers/ProviderController';
 import TaskController from './app/controllers/TaskController';
 import AddressController from './app/controllers/AddressController';
 import ScheduleController from './app/controllers/ScheduleController';
@@ -24,7 +24,6 @@ routes.post('/sessions', SessionController.store);
 routes.use(authMiddleware);
 
 routes.get('/people', PersonController.index);
-routes.post('/people/:person_id/users', UserController.store);
 routes.put('/people/:id', PersonController.update);
 routes.get('/people/:id', PersonController.show);
 
@@ -33,8 +32,9 @@ routes.get('/collaborators/:id', CollaboratorController.show);
 routes.put('/collaborators/:id', CollaboratorController.update);
 routes.delete('/collaborators/:id', CollaboratorController.delete);
 
-routes.put('/users', UserController.update);
 routes.get('/users', UserController.index);
+routes.post('/people/:person_id/users', UserController.store);
+routes.put('/users/:id', UserController.update);
 
 routes.get('/schedules', ScheduleController.index);
 routes.post('/schedules', ScheduleController.store);
@@ -52,6 +52,6 @@ routes.put('/tasks/:id', TaskController.update);
 routes.get('/logs', LogController.index);
 
 routes.post('/files', upload.single('file'), FileController.store); // »» Upload de Arquilos
-routes.get('/profile', ProfileController.index);
+routes.get('/providers', ProviderController.index);
 
 export default routes;
