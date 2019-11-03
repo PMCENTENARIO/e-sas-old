@@ -1,7 +1,7 @@
 import React from 'react';
 
-// import { Container } from './styles';
+import RegisterUser from '~/components/RegisterUser';
 
 export default function Provider() {
-  return <h1>Provider</h1>;
+  return <RegisterUser />;
 }

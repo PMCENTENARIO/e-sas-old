@@ -1,33 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { Form, Input } from '@rocketseat/unform';
-import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+// import * as Yup from 'yup';
+// import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import logo from '~/assets/logoSmart.svg';
-import { Container, Footer, ErrorMessage } from './styles';
+import { Container, Footer /* ErrorMessage */ } from './styles';
 import Squeres from '~/components/Squares';
+import { signInRequest } from '~/store/modules/auth/actions';
 
 export default function SignIn() {
-  const [validade, setValidate] = useState(false);
-  const handleSchema = () => {
-    setValidate(true);
-    // const fields = [...document.querySelectorAll('form input')];
-    // console.log(fields.value);
+  const dispatch = useDispatch();
 
-    setTimeout(() => setValidate(false), 5000);
-  };
-
-  const handleValidation = data => {
-    console.tron.log(data);
+  const handleSubmit = ({ email, password }) => {
     const main = document.querySelector('main');
 
-    const fields = [...document.querySelectorAll('form input')];
-
-    fields.forEach(field => {
-      if (field.value === '') {
-        main.classList.add('validate-error');
-      }
-    });
+    if (!email || !password) {
+      main.classList.add('validate-error');
+    }
 
     const formError = document.querySelector('.validate-error');
 
@@ -37,9 +28,9 @@ export default function SignIn() {
           formError.classList.remove('validate-error');
         }
       });
-
-      handleSchema();
+      toast.error('Campo e-mail ou senha estão incorretos');
     } else {
+      dispatch(signInRequest(email, password));
       main.classList.add('main-hide');
     }
 
@@ -63,16 +54,16 @@ export default function SignIn() {
         <img src={logo} alt="Centenário do Sul" />
         <h1>S@S - GOV</h1>
         <p>LOGIN</p>
-        <Form onSubmit={handleValidation}>
+        <Form onSubmit={handleSubmit}>
           <Input name="email" type="email" placeholder="Digite seu email" />
           <Input
             name="password"
             type="password"
             placeholder="Digite sua senha"
           />
-          {validade && (
+          {/* {validade && (
             <ErrorMessage>Campo e-mail ou senha estão incorretos</ErrorMessage>
-          )}
+          )} */}
           <button type="submit">Acessar</button>
         </Form>
         <Footer>

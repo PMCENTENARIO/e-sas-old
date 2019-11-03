@@ -1,7 +1,27 @@
 import React from 'react';
 
-// import { Container } from './styles';
+import Header from '~/components/Header';
+import Section from '~/components/Section';
+import Drawer from '~/components/Drawer';
+import Footer from '~/components/Footer';
+
+import RegisterUser from '~/components/RegisterUser';
+
+import { Wrapper } from './styles';
+
+const main = (
+  <div>
+    <RegisterUser />
+  </div>
+);
 
 export default function Dashboard() {
-  return <h1>Dashboard</h1>;
+  return (
+    <Wrapper>
+      <Header />
+      <Drawer />
+      <Section main={main} />
+      <Footer />
+    </Wrapper>
+  );
 }

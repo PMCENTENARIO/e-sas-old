@@ -31,6 +31,7 @@ class SessionController {
         id,
         person_id,
         email,
+        profile,
         avatar,
       },
       /* Geração de Token */
