@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Form, Input } from '@rocketseat/unform';
 // import * as Yup from 'yup';
 // import { Link } from 'react-router-dom';
@@ -9,14 +9,17 @@ import logo from '~/assets/logoSmart.svg';
 import { Container, Footer /* ErrorMessage */ } from './styles';
 import Squeres from '~/components/Squares';
 import { signInRequest } from '~/store/modules/auth/actions';
+import { store } from '~/store';
 
 export default function SignIn() {
   const dispatch = useDispatch();
+  const loading = useSelector(state => state.auth.loading);
+  const signed = useSelector(state => state.auth.signed);
 
-  const handleSubmit = ({ email, password }) => {
+  const hadleValidate = () => {
     const main = document.querySelector('main');
 
-    if (!email || !password) {
+    if (!signed) {
       main.classList.add('validate-error');
     }
 
@@ -28,9 +31,7 @@ export default function SignIn() {
           formError.classList.remove('validate-error');
         }
       });
-      toast.error('Campo e-mail ou senha estão incorretos');
     } else {
-      dispatch(signInRequest(email, password));
       main.classList.add('main-hide');
     }
 
@@ -46,6 +47,11 @@ export default function SignIn() {
         document.querySelector('body').style.overflow = 'hidden';
       }
     });
+  };
+
+  const handleSubmit = ({ email, password }) => {
+    dispatch(signInRequest(email, password));
+    hadleValidate();
   };
 
   return (
@@ -64,7 +70,7 @@ export default function SignIn() {
           {/* {validade && (
             <ErrorMessage>Campo e-mail ou senha estão incorretos</ErrorMessage>
           )} */}
-          <button type="submit">Acessar</button>
+          <button type="submit">{loading ? 'Carregando...' : 'Acessar'}</button>
         </Form>
         <Footer>
           <strong>PR Spiguel Tecnologia</strong>
