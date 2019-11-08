@@ -2,8 +2,13 @@ import styled from 'styled-components';
 import { darken } from 'polished';
 
 export const Wrapper = styled.div`
-  /*  height: 100%; */
-  background: linear-gradient(90deg, #bdc3c7, #2c3e50);
+  height: 100%;
+  /* background: linear-gradient(90deg, #bdc3c7, #2c3e50); */
+  background: #353640;
+
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 
   select {
     height: 24px;
@@ -14,7 +19,7 @@ export const Wrapper = styled.div`
     font-size: 16px;
   }
 
-  button {
+ /*  button {
     height: 44px;
     background: #27ae60;
     color: #fff;
@@ -27,5 +32,5 @@ export const Wrapper = styled.div`
     &:hover {
       background: ${darken(0.03, '#27ae60')};
     }
-  }
+  }*/
 `;

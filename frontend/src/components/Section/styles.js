@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
 export const Container = styled.section`
-  grid-area: m;
-  height: 100%;
   background: linear-gradient(90deg, #bdc3c7, #bdc3c7);
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+
+  width: 100%;
 `;
 
 export const HeaderMain = styled.div`
@@ -17,10 +17,11 @@ export const HeaderMain = styled.div`
 `;
 
 export const Main = styled.div`
+  display: flex;
+  flex-direction: column;
   background-color: #ecf0f1;
-  height: 100%;
-  padding: 20px;
   margin: 20px;
-  border-radius: 4px;
+  padding: 30px;
   overflow-x: hidden;
+  height: 100%;
 `;

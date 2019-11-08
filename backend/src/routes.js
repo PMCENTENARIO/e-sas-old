@@ -12,6 +12,7 @@ import TaskController from './app/controllers/TaskController';
 import AddressController from './app/controllers/AddressController';
 import ScheduleController from './app/controllers/ScheduleController';
 import LogController from './app/controllers/LogController';
+import NotificationController from './app/controllers/NotificationController';
 import CollaboratorController from './app/controllers/CollaboratorController';
 
 const upload = multer(multerConfig);
@@ -50,6 +51,9 @@ routes.post('/tasks', TaskController.store);
 routes.put('/tasks/:id', TaskController.update);
 
 routes.get('/logs', LogController.index);
+
+routes.get('/notifications', NotificationController.index);
+routes.post('/notifications', NotificationController.store);
 
 routes.post('/files', upload.single('file'), FileController.store); // »» Upload de Arquilos
 routes.get('/providers', ProviderController.index);

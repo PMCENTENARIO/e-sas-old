@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 import { Container, HeaderMain, Main } from './styles';
 
 export default function Section(props) {
-  const { main } = props;
+  const { content } = props;
   return (
     <Container>
       <HeaderMain />
-      <Main>{main}</Main>
+      <Main>{content}</Main>
     </Container>
   );
 }
 
 Section.propTypes = {
-  main: PropTypes.element.isRequired,
+  content: PropTypes.element.isRequired,
 };

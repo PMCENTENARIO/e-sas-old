@@ -1,7 +1,7 @@
 import React from 'react';
 
-import RegisterUser from '~/components/RegisterUser';
+import NewUser from '~/components/NewUser';
 
 export default function Provider() {
-  return <RegisterUser />;
+  return <NewUser />;
 }

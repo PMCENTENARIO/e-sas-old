@@ -3,7 +3,7 @@ import Person from '../models/Person';
 
 class PersonController {
   async index(req, res) {
-    if (req.userProfile < 2)
+    if (req.userProfile < process.env.LEVEL_ADMINISTRADOR)
       return res.status(400).json({ error: 'User does not have permission' });
 
     const { page = 1 } = req.query;
@@ -30,6 +30,11 @@ class PersonController {
       return res.status(401).json({ error: 'Validation fail' });
     }
 
+    const persnExist = Person.findOne({ where: document });
+
+    if (persnExist)
+      return res.status(401).json({ error: 'Person alrealy exists.' });
+
     const person = await Person.create({
       name,
       phone,
@@ -45,7 +50,7 @@ class PersonController {
   }
 
   async update(req, res) {
-    if (req.userProfile < 2)
+    if (req.userProfile < process.env.LEVEL_ADMINISTRADOR)
       return res.status(400).json({ error: 'User does not have permission' });
 
     const { id } = req.params;
