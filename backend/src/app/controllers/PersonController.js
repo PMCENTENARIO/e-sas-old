@@ -30,9 +30,15 @@ class PersonController {
       return res.status(401).json({ error: 'Validation fail' });
     }
 
-    const persnExist = Person.findOne({ where: document });
+    const personExists = await Person.findOne({
+      where: {
+        document,
+      },
+    });
 
-    if (persnExist)
+    console.log('valor: ', personExists);
+
+    if (personExists)
       return res.status(401).json({ error: 'Person alrealy exists.' });
 
     const person = await Person.create({

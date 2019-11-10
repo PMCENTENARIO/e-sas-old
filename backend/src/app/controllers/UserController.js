@@ -17,13 +17,14 @@ class UserController {
       order: ['email'],
       limit: 20,
       offset: (page - 1) * 20,
-      include: { association: 'person' },
+      include: { association: 'person', attributes: ['name', 'phone'] },
+      attributes: ['id', 'email', 'profile', 'createdAt'],
     });
     return res.json(users);
   }
 
   async store(req, res) {
-    if (req.userProfile < 2)
+    if (req.userProfile < process.env.LEVAL_OPERATOR)
       return res.status(400).json({ error: 'User does not have permission' });
 
     const { email, password, profile } = req.body;
@@ -46,7 +47,9 @@ class UserController {
     const person = await Person.findByPk(person_id);
 
     /* VERIFY IF ALREADY USER, EMAIL */
-    if (!person) return res.status(400).json({ error: 'Person not found' });
+    if (!person) {
+      return res.status(401).json({ error: 'Person not found' });
+    }
 
     const userExists = await User.findOne({ where: { email } });
 
@@ -99,7 +102,7 @@ class UserController {
 
   async update(req, res) {
     // Verifica perfil usuário
-    if (req.userProfile < 2)
+    if (req.userProfile < process.env.LEVAL_OPERATOR)
       return res.status(400).json({ error: 'User does not have permission' });
 
     // Validação de dados de entrada

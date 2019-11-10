@@ -20,6 +20,13 @@ class NotificationController {
     const notification = await Notification.create({ content });
     return res.json(notification);
   }
+
+  async update(req, res) {
+    const id = req.query;
+
+    const notification = Notification.update({ where: id }, req.body);
+    return res.json(notification);
+  }
 }
 
 export default new NotificationController();
