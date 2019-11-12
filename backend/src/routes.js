@@ -54,6 +54,7 @@ routes.get('/logs', LogController.index);
 
 routes.get('/notifications', NotificationController.index);
 routes.post('/notifications', NotificationController.store);
+routes.put('/notifications/:id', NotificationController.update);
 
 routes.post('/files', upload.single('file'), FileController.store); // »» Upload de Arquilos
 routes.get('/providers', ProviderController.index);

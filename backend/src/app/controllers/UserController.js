@@ -8,10 +8,10 @@ import Log from '../schema/Log';
 class UserController {
   async index(req, res) {
     // Verifica perfil usuário
-    if (req.userProfile < 2)
+    if (req.userProfile < process.env.LEVAL_ADMINISTRATOR)
       return res.status(400).json({ error: 'User does not have permission' });
 
-    const { page } = req.query;
+    const { page = 1 } = req.query;
 
     const users = await User.findAll({
       order: ['email'],

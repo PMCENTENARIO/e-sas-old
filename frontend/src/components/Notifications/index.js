@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { parseISO, formatDistance } from 'date-fns';
 import pt from 'date-fns/locale/pt';
 
@@ -17,9 +17,15 @@ export default function Notifications() {
   const [visible, setVisible] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
+  const hasUnread = useMemo(() =>
+    Boolean(notifications.find(notification => notification.read === false), [
+      notifications,
+    ])
+  );
+
   useEffect(() => {
     async function loadNotifications() {
-      const response = await api.get('logs');
+      const response = await api.get('notifications');
 
       const data = response.data.map(notification => ({
         ...notification,
@@ -40,9 +46,19 @@ export default function Notifications() {
     setVisible(!visible);
   };
 
+  async function handleMarkAsRead(id) {
+    await api.put(`notifications/${id}`);
+
+    setNotifications(
+      notifications.map(notification =>
+        notification._id === id ? { ...notification, read: true } : notification
+      )
+    );
+  }
+
   return (
     <Container>
-      <Badge onClick={handleToggleVisible} hasUnread>
+      <Badge onClick={handleToggleVisible} hasUnread={hasUnread}>
         <FaBell color="#34495e" size={24} />
       </Badge>
       <NotificationList visible={visible}>
@@ -51,7 +67,14 @@ export default function Notifications() {
             <Notification unread={!notification.read}>
               <p>{notification.content}</p>
               <time>{notification.timeDistance}</time>
-              <button type="button">Marcar como lida</button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleMarkAsRead(notification._id);
+                }}
+              >
+                Marcar como lida
+              </button>
             </Notification>
           ))}
         </Scroll>

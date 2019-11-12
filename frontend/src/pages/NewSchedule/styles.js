@@ -3,7 +3,7 @@ import { darken } from 'polished';
 
 export const Content = styled.div`
   @media screen and (min-width: 850px) {
-    .searchPerson {
+    /* .AutoComplete-Compont {
       flex-direction: row;
       div:nth-child(1) {
         input {
@@ -18,11 +18,11 @@ export const Content = styled.div`
         padding: 0 20px;
         margin-left: 20px;
       }
-    }
+    } */
   }
 
   @media screen and (max-width: 850px) {
-    .searchPerson {
+    /* .AutoComplete-Compont {
       flex-direction: column;
       div:nth-child(1) {
         input {
@@ -37,7 +37,7 @@ export const Content = styled.div`
         margin-top: 10px;
         padding: 0 10px;
       }
-    }
+    } */
   }
   display: flex;
   flex-direction: column;
@@ -57,7 +57,52 @@ export const Content = styled.div`
     display: flex;
     flex-direction: column;
 
-    .searchPerson {
+    .AutoComplete-Compont {
+      margin: 0 auto 10px 0;
+      width: 100%;
+
+      input {
+        border: 1px solid #999;
+        padding: 0.5rem;
+        width: 100%;
+      }
+
+      .no-suggestions {
+        color: #999;
+        padding: 0.5rem;
+      }
+
+      .suggestions {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #999;
+        border-top-width: 0;
+        list-style: none;
+        margin-top: 0;
+        max-height: 143px;
+        overflow-y: auto;
+        padding-left: 0;
+        width: calc(300px + 1rem);
+      }
+
+      .suggestions li {
+        padding: 0.5rem;
+      }
+
+      .suggestion-active,
+      .suggestions li:hover {
+        background-color: #008f68;
+        color: #fae042;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .suggestions li:not(:last-of-type) {
+        border-bottom: 1px solid #999;
+      }
+    }
+
+    /* .AutoComplete-Compont {
       display: flex;
       width: 100%;
       align-items: center;
@@ -94,7 +139,7 @@ export const Content = styled.div`
           }
         }
       }
-    }
+    } */
 
     textarea {
       margin-bottom: 20px;

@@ -36,8 +36,6 @@ class PersonController {
       },
     });
 
-    console.log('valor: ', personExists);
-
     if (personExists)
       return res.status(401).json({ error: 'Person alrealy exists.' });
 

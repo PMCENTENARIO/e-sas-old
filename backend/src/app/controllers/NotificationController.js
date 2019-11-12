@@ -6,8 +6,9 @@ class NotificationController {
       return res.status(401).json({ error: 'User does not have permission' });
 
     const notifications = await Notification.find()
-      .sort({ createAt: 'desc' })
+      .sort({ createdAt: 'desc' })
       .limit(20);
+
     return res.json(notifications);
   }
 
@@ -22,9 +23,19 @@ class NotificationController {
   }
 
   async update(req, res) {
-    const id = req.query;
+    const { read, content } = req.body;
+    const notification = await Notification.findById(req.params.id);
 
-    const notification = Notification.update({ where: id }, req.body);
+    if (typeof content === 'undefined') {
+      notification.read = true;
+    } else {
+      notification.read = read;
+      notification.content = content;
+    }
+
+    notification.new = true;
+    await notification.save();
+
     return res.json(notification);
   }
 }

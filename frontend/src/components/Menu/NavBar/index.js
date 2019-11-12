@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  ButtonToolbar,
+  OverlayTrigger,
+  Tooltip,
+  Button,
+} from 'react-bootstrap';
 
 import {
   FaWindows,
@@ -30,28 +36,91 @@ export default function NavBar() {
             {open ? <FaChevronLeft /> : <FaBars />}
           </button>
         </div>
-        <Link to="/">
-          <FaWindows size={50} />
-          <span>DASHBOARD</span>
-        </Link>
-        <Link to="/people">
-          <FaUsers size={50} />
-          <span>CIDADÃO</span>
-        </Link>
-        {userId >= 3 && (
-          <Link to="/users">
-            <FaIdCard size={50} />
-            <span>USUÁRIOS</span>
-          </Link>
-        )}
-        <Link to="/schedules">
-          <FaCalendarPlus size={50} />
-          <span>AGENDAMENTO</span>
-        </Link>
-        <Link to="/">
-          <FaChartPie size={50} />
-          <span>RELATÓRIOS</span>
-        </Link>
+
+        {/*
+
+
+
+        */}
+
+        <ButtonToolbar>
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip>
+                <strong>Dashboard</strong>.
+              </Tooltip>
+            }
+          >
+            <Link to="/">
+              <FaWindows size={50} />
+              <span>DASHBOARD</span>
+            </Link>
+          </OverlayTrigger>
+        </ButtonToolbar>
+
+        <ButtonToolbar>
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip>
+                <strong>Cadastro Cidadão</strong>.
+              </Tooltip>
+            }
+          >
+            <Link to="/people">
+              <FaUsers size={50} />
+              <span>CIDADÃO</span>
+            </Link>
+          </OverlayTrigger>
+        </ButtonToolbar>
+        <ButtonToolbar>
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip>
+                <strong>Cadastro de Usuários</strong>.
+              </Tooltip>
+            }
+          >
+            {userId >= 3 && (
+              <Link to="/users">
+                <FaIdCard size={50} />
+                <span>USUÁRIOS</span>
+              </Link>
+            )}
+          </OverlayTrigger>
+        </ButtonToolbar>
+        <ButtonToolbar>
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip>
+                <strong>Agendamento</strong>.
+              </Tooltip>
+            }
+          >
+            <Link to="/schedules">
+              <FaCalendarPlus size={50} />
+              <span>AGENDAMENTO</span>
+            </Link>
+          </OverlayTrigger>
+        </ButtonToolbar>
+        <ButtonToolbar>
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip>
+                <strong>Relatórios</strong>.
+              </Tooltip>
+            }
+          >
+            <Link to="/">
+              <FaChartPie size={50} />
+              <span>RELATÓRIOS</span>
+            </Link>
+          </OverlayTrigger>
+        </ButtonToolbar>
       </nav>
       <aside>
         <Link to="/">

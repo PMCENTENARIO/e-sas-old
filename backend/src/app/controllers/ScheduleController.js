@@ -13,12 +13,12 @@ import LogSystem from '../../lib/LogSystem';
 
 class ScheduleController {
   async index(req, res) {
-    if (req.userProfile < 1)
+    if (req.userProfile < process.env.LEVEL_DEFAULT)
       return res.status(401).json({ error: 'User does not have permission' });
 
     const { page = 1 } = req.query;
 
-    const schedule = await Schedule.finddAll({
+    const schedule = await Schedule.findAll({
       where: { apply: null, canceled_at: null },
       attributes: ['id', 'protocol', 'date', 'message'],
       order: ['date'],

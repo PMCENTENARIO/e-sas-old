@@ -7,4 +7,22 @@ export const Content = styled.div`
   button {
     margin: 10px;
   }
+
+  table {
+    thead {
+      tr {
+        text-align: center;
+      }
+    }
+    tbody {
+      td {
+        text-align: center;
+        padding-left: 10px;
+      }
+      td:last-child {
+        text-align: end;
+        width: 160px;
+      }
+    }
+  }
 `;

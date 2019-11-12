@@ -1,26 +1,23 @@
 import React from 'react';
-import { FaSearch } from 'react-icons/fa';
+import AutoComplete from '~/components/AutoComplete';
 
 import Main from '~/components/Main';
 import { Content } from './styles';
 
 export default function NewPeople() {
+  const listPeople = ['Lívia', 'Paulo', 'Maycon', 'Adriana', 'Luiz'];
+  const person = {
+    name: 'Lívia Spiguel',
+    contact: '43996320797',
+    document: '000000000-01',
+  };
+
   const content = (
     <Content>
       <h3>Novo Agendamento de Serviço</h3>
       <form>
-        <div className="searchPerson">
-          <div>
-            <input type="text" name="name" />
-            <button type="button">
-              <FaSearch size={25} />
-            </button>
-          </div>
-          <div>
-            <span>Name: Lívia Spiguel</span>
-            <span>Contacto: (43) 996320797</span>
-            <span>CPF: ****0000-01</span>
-          </div>
+        <div className="AutoComplete-Compont">
+          <AutoComplete suggestions={listPeople} />
         </div>
 
         <fieldset>
