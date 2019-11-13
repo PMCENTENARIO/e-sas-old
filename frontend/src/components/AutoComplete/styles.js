@@ -1,43 +1,73 @@
 import styled from 'styled-components';
 
 export const Content = styled.div`
+  margin: 0 auto 10px 0;
   width: 100%;
-  /* border: 1px solid grey; */
-  /* box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px 1px rgba(0, 0, 0, 0.18); */
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.73);
-  background: #fff;
 
   input {
-    min-height: 44px;
-    min-width: 40%;
+    border: 1px solid #999;
+    padding: 0.5rem;
     width: 100%;
-    border: none;
-    color: rgba(0, 0, 0, 0.73);
-    border-radius: 4px;
+    height: 44px;
   }
-
   ul {
-    width: 400px;
     position: absolute;
-    text-align: left;
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid grey;
-    background-color: rgba(255, 255, 255, 0.73);
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px 1px rgba(0, 0, 0, 0.18);
-
-    &::before {
-      content: '';
-    }
+    background-color: #fff;
+    border: 1px solid #999;
+    border-top-width: 0;
+    list-style: none;
+    margin-top: 0;
+    max-height: 143px;
+    overflow-y: auto;
+    padding-left: 0;
+    width: calc(400px + 1rem);
 
     li {
-      padding: 10px 5px;
+      padding: 0.5rem;
+    }
+
+    li:hover {
+      background-color: #008f68;
+      color: #fae042;
       cursor: pointer;
-      &:hover {
-        text-decoration: underline;
-        background-color: rgba(128, 128, 128, 0.2);
-      }
+      font-weight: 700;
+    }
+
+    li:not(:last-of-type) {
+      border-bottom: 1px solid #999;
+    }
+
+    .suggestion-active {
+      background-color: #008f68;
+      color: #fae042;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .no-suggestions {
+      color: #999;
+      padding: 0.5rem;
+    }
+  }
+`;
+
+export const BoxInfo = styled.div`
+  margin-top: 10px;
+  border: 1px solid grey;
+  border-radius: 4px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: 44px;
+
+  span {
+    margin-left: 20px;
+    font-style: italic;
+
+    &:nth-child(n + 2) {
+      padding-left: 20px;
+      border-left: 1px solid #fff;
     }
   }
 `;

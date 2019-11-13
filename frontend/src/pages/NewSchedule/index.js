@@ -1,45 +1,101 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import AutoComplete from '~/components/AutoComplete';
 
 import Main from '~/components/Main';
-import { Content } from './styles';
+import { Wrapper } from './styles';
 
 export default function NewPeople() {
-  const listPeople = ['Lívia', 'Paulo', 'Maycon', 'Adriana', 'Luiz'];
-  const person = {
-    name: 'Lívia Spiguel',
-    contact: '43996320797',
-    document: '000000000-01',
-  };
+  const listPeople = [
+    {
+      id: 1,
+      name: 'Lívia Spiguel',
+      contact: '43996320797',
+      document: '000000000-01',
+    },
+    {
+      id: 2,
+      name: 'Paulo Spiguel',
+      contact: '43996320797',
+      document: '000000000-02',
+    },
+    {
+      id: 3,
+      name: 'Maycon Henrique',
+      contact: '43996320797',
+      document: '000000000-03',
+    },
+    {
+      id: 4,
+      name: 'Adriana Garcez',
+      contact: '43996320797',
+      document: '000000000-04',
+    },
+    {
+      id: 5,
+      name: 'Luiz Roberto',
+      contact: '43996320797',
+      document: '000000000-05',
+    },
+  ];
+
+  const verifyInput = useSelector(state => state.schedule.filledInput);
 
   const content = (
-    <Content>
+    <Wrapper>
       <h3>Novo Agendamento de Serviço</h3>
       <form>
-        <div className="AutoComplete-Compont">
-          <AutoComplete suggestions={listPeople} />
-        </div>
-
+        <AutoComplete suggestions={listPeople} />
         <fieldset>
-          <input type="text" name="zip_code" placeholder="CEP" />
+          <input
+            disabled={verifyInput}
+            type="text"
+            name="zip_code"
+            placeholder="CEP"
+          />
           <div>
-            <input type="text" name="street" placeholder="Logradouro" />
-            <input type="number" name="number" placeholder="Número" />
+            <input
+              disabled={verifyInput}
+              type="text"
+              name="street"
+              placeholder="Logradouro"
+            />
+            <input
+              disabled={verifyInput}
+              type="number"
+              name="number"
+              placeholder="Número"
+            />
           </div>
-          <input type="text" name="district" placeholder="Bairro" />
-          <select name="task">
+          <input
+            disabled={verifyInput}
+            type="text"
+            name="district"
+            placeholder="Bairro"
+          />
+          <select disabled={verifyInput} name="task">
             <option value="">Selecionar</option>
           </select>
         </fieldset>
         <textarea
+          disabled={verifyInput}
           name="message"
           cols="30"
           rows="5"
           placeholder="Informações adcionais"
         />
-        <button type="submit">Salvar</button>
+        <button
+          disabled={verifyInput}
+          type="submit"
+          onClick={() => {
+            alert('ok');
+          }}
+        >
+          Salvar
+        </button>
       </form>
-    </Content>
+    </Wrapper>
   );
+
   return <Main content={content} />;
 }
