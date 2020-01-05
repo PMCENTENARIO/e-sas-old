@@ -14,6 +14,7 @@
     "bootstrap": "^4.3.1",
     "customize-cra": "^0.8.0",
     "date-fns": "^2.0.0-beta.5",
+    "dotenv": "^8.2.0",
     "history": "^4.10.1",
     "immer": "^5.0.0",
     "material-table": "^1.53.0",
@@ -25,6 +26,7 @@
     "react-bootstrap-typeahead": "^3.4.7",
     "react-dom": "^16.11.0",
     "react-icons": "^3.8.0",
+    "react-loadingg": "^1.6.2",
     "react-perfect-scrollbar": "^1.5.3",
     "react-redux": "^7.1.1",
     "react-router-dom": "^5.1.2",
@@ -58,6 +60,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
     "babel-eslint": "^10.0.3",
     "eslint": "^6.6.0",
     "eslint-config-airbnb": "^18.0.1",

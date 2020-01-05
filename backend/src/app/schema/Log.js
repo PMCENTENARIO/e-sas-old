@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 
 const LogSchema = new mongoose.Schema(
   {
+    application: {
+      type: String,
+      required: true,
+    },
     content: {
       type: String,
       required: true,

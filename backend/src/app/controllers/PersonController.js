@@ -27,7 +27,9 @@ class PersonController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(401).json({ error: 'Validation fail' });
+      return res
+        .status(401)
+        .json({ error: 'Validation fail. Some required field is missing' });
     }
 
     const personExists = await Person.findOne({

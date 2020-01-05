@@ -6,17 +6,20 @@ import { Form, Input } from '@rocketseat/unform';
 // import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+import { LoopCircleLoading } from 'react-loadingg/';
 import logo from '~/assets/logoSmart.svg';
 import { Container, Footer /* ErrorMessage */ } from './styles';
 import Squeres from '~/components/Squares';
 import { signInRequest } from '~/store/modules/auth/actions';
 import { store } from '~/store';
 
+require('dotenv').config();
+
 export default function SignIn() {
   const dispatch = useDispatch();
   const loading = useSelector(state => state.auth.loading);
   const signed = useSelector(state => state.auth.signed);
-
+  const [loadSpinner, setLoadSpinner] = React.useState(false);
   const hadleValidate = () => {
     const main = document.querySelector('main');
 
@@ -51,8 +54,12 @@ export default function SignIn() {
   };
 
   const handleSubmit = ({ email, password }) => {
-    dispatch(signInRequest(email, password));
-    hadleValidate();
+    setLoadSpinner(true);
+    setTimeout(() => {
+      dispatch(signInRequest(email, password));
+      hadleValidate();
+      setLoadSpinner(false);
+    }, 2000);
   };
 
   return (
@@ -73,13 +80,14 @@ export default function SignIn() {
           )} */}
           <button type="submit">{loading ? 'Carregando...' : 'Acessar'}</button>
         </Form>
+        {loadSpinner && <LoopCircleLoading />}
         <Footer>
           <strong>PR Spiguel Tecnologia</strong>
-          <strong>v1.0</strong>
+          <strong>{`v.${process.env.APP_VERSION}`}</strong>
         </Footer>
       </Container>
       {/* <Link to="/register">Cadastre-se para acessar</Link> */}
-      <Squeres />
+      {/* <Squeres /> Erro ocurred in login */}
     </>
   );
 }

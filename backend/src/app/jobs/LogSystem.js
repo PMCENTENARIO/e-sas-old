@@ -10,6 +10,7 @@ class LogSystem {
     const { schedule, content, user } = data;
 
     await Log.create({
+      application: `${process.env.APP_NAME}/${process.env.COMPANY}`,
       content: `${content} ${schedule.person.name} na ${moment()
         .locale('pt-br')
         .tz(process.env.TIMEZONE)

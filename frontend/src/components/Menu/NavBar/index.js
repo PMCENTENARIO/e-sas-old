@@ -20,14 +20,24 @@ import {
   FaChevronLeft,
 } from 'react-icons/fa';
 import { Container, Content } from './styles';
+import ModalConfirm from '~/components/Modals/ModalConfirm';
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
   const userId = 3;
 
   const handleToggleOpen = () => {
     setOpen(!open);
   };
+  const handleModal = e => {
+    if (e.target.id !== 'cancel') {
+      localStorage.removeItem('persist:e-s@s');
+      window.location.reload();
+    }
+    setModalShow(false);
+  };
+
   return (
     <Container open={open}>
       <nav>
@@ -36,13 +46,6 @@ export default function NavBar() {
             {open ? <FaChevronLeft /> : <FaBars />}
           </button>
         </div>
-
-        {/*
-
-
-
-        */}
-
         <ButtonToolbar>
           <OverlayTrigger
             placement="right"
@@ -123,12 +126,25 @@ export default function NavBar() {
         </ButtonToolbar>
       </nav>
       <aside>
-        <Link to="/">
-          <FaRegCommentDots size={30} />
-        </Link>
-        <Link to="/">
-          <FaSignOutAlt size={30} />
-        </Link>
+        <div>
+          <Link to="/">
+            <FaRegCommentDots size={30} />
+          </Link>
+        </div>
+        <div>
+          <button
+            style={{ background: 'transparent !important' }}
+            type="button"
+            onClick={() => setModalShow(true)}
+          >
+            <FaSignOutAlt size={30} />
+          </button>
+          <ModalConfirm
+            show={modalShow}
+            onHide={() => setModalShow(false)}
+            handleModal={handleModal}
+          />
+        </div>
       </aside>
     </Container>
   );

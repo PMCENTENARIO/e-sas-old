@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Form, Input, Select } from '@rocketseat/unform';
 import * as Yup from 'yup';
 
-import ModalShow from '../ModalShow';
+import ModalShow from '../Modals/ModalShow';
 
 import { signUpRequest } from '~/store/modules/user/actions';
 

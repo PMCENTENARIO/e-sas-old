@@ -39,7 +39,9 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(401).json({ error: 'Validation fail' });
+      return res
+        .status(401)
+        .json({ error: 'Validation fail. Some field is missing.' });
     }
 
     const { person_id } = req.params;
@@ -73,6 +75,7 @@ class UserController {
       SENT SYSTEM LOG
       */
       await Log.create({
+        application: `${process.env.APP_NAME}/${process.env.COMPANY}`,
         content: `Um novo usuário para ${person.name} foi criado na ${moment()
           .locale('pt-br')
           .tz(process.env.TIMEZONE)
@@ -96,7 +99,7 @@ class UserController {
     }
 
     return res
-      .status(400)
+      .status(502)
       .json({ error: 'Erro ocurred. Contact the system manager' });
   }
 
@@ -120,7 +123,9 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(401).json({ error: 'Validation fail' });
+      return res
+        .status(401)
+        .json({ error: 'Validation fail. Some field is missing.' });
     }
 
     const { id } = req.params;
@@ -150,6 +155,21 @@ class UserController {
         },
       ],
     });
+
+    /*
+      SENT SYSTEM LOG
+      */
+    await Log.create({
+      application: `${process.env.APP_NAME}/${process.env.COMPANY}`,
+      content: `O usuário de login ${email} foi modificado em ${moment()
+        .locale('pt-br')
+        .tz(process.env.TIMEZONE)
+        .format('LLLL')}`,
+      user: req.userId,
+    });
+    /*
+    END LOG
+    */
 
     return res.json({
       id,

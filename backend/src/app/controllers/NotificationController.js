@@ -18,7 +18,10 @@ class NotificationController {
 
     const { content } = req.body;
 
-    const notification = await Notification.create({ content });
+    const notification = await Notification.create({
+      application: `${process.env.APP_NAME}/${process.env.COMPANY}`,
+      content,
+    });
     return res.json(notification);
   }
 

@@ -13,6 +13,7 @@ export default function Section(props) {
   );
 }
 
-Section.propTypes = {
+/* Section.propTypes = {
   content: PropTypes.element.isRequired,
 };
+ */

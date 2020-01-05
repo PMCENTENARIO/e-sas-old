@@ -4,6 +4,7 @@ import Log from '../app/schema/Log';
 class LogSystem {
   async scheduleLog(schedule, text) {
     await Log.create({
+      application: `${process.env.APP_NAME}/${process.env.COMPANY}`,
       content: `${text} ${schedule.person.name} na ${moment()
         .locale('pt-br')
         .tz(process.env.TIMEZONE)
@@ -15,6 +16,7 @@ class LogSystem {
 
   async processLog(task, text, user) {
     await Log.create({
+      application: `${process.env.APP_NAME}/${process.env.COMPANY}`,
       content: `${text} na ${moment()
         .locale('pt-br')
         .tz(process.env.TIMEZONE)

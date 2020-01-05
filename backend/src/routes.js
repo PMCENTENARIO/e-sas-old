@@ -34,7 +34,7 @@ routes.put('/collaborators/:id', CollaboratorController.update);
 routes.delete('/collaborators/:id', CollaboratorController.delete);
 
 routes.get('/users', UserController.index);
-routes.post('/people/:person_id/users', UserController.store);
+routes.post('/users/:person_id/create', UserController.store);
 routes.put('/users/:id', UserController.update);
 
 routes.get('/schedules', ScheduleController.index);
