@@ -7,6 +7,7 @@ import { Form, Input } from '@rocketseat/unform';
 import { toast } from 'react-toastify';
 
 import { LoopCircleLoading } from 'react-loadingg/';
+
 import logo from '~/assets/logoSmart.svg';
 import { Container, Footer /* ErrorMessage */ } from './styles';
 import Squeres from '~/components/Squares';
@@ -66,7 +67,9 @@ export default function SignIn() {
     <>
       <Container>
         <img src={logo} alt="Centenário do Sul" />
-        <h1>S@S - GOV</h1>
+        <div className="system-name">
+          <h3>E-SAS.IO</h3>
+        </div>
         <p>LOGIN</p>
         <Form onSubmit={handleSubmit}>
           <Input name="email" type="email" placeholder="Digite seu email" />

@@ -5,6 +5,12 @@ export const Container = styled.main`
   border-radius: 4px;
   padding: 20px 30px;
   width: 100%;
+
+  h3 {
+    margin-top: 10px;
+    color: #fff;
+    letter-spacing: 0.2rem;
+  }
 `;
 export const ErrorMessage = styled.span`
   color: #e74c3c;
